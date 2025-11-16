@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/Modules/" />
+  <Folder Name="/Modules/Identity/" />
+  <Folder Name="/Modules/Identity/src/">
+    <Project Path="src/Modules/Identity/src/Identity/Identity.csproj" />
+  </Folder>
+  <Folder Name="/Modules/Identity/tests/" />
+  <Project Path="src/Api/Api.csproj" />
+  <Project Path="src/SharedKernel/SharedKernel.csproj" Id="5d86059e-fff2-4ed3-b000-5d3cd67e4310" />
+</Solution>

@@ -1,0 +1,1 @@
+Add-Migration MigrationName -Project Identity -StartupProject Api -OutputDir Data\Migrations
