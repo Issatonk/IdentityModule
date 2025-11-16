@@ -3,14 +3,16 @@ using Identity.Identity.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
+using SharedKernel.Web;
 public record LoginCommand(string UserName, string Password);
 public record LoginResponse(string AccessToken, string RefreshToken, int ExpiresIn);
-public static class LoginEndpoint
+public class LoginEndpoint : IEndpoint
 {
-    public static WebApplication MapLoginEndpoint(this WebApplication app)
+    public void MapEndpoint(IEndpointRouteBuilder builder)
     {
-        app.MapPost("/auth/login", async (LoginCommand cmd, LoginHandler handler, HttpContext http) =>
+        builder.MapPost("/auth/login", async (LoginCommand cmd, LoginHandler handler, HttpContext http) =>
         {
             var ip = http.Connection.RemoteIpAddress?.ToString() ?? "unknown";
             var result = await handler.Handle(cmd, ip);
@@ -18,8 +20,6 @@ public static class LoginEndpoint
         })
         .WithName("Login")
         .WithTags("Auth");
-
-        return app;
     }
 }
 
@@ -56,7 +56,7 @@ public class LoginHandler
             UserId = user.Id,
         });
         await _db.SaveChangesAsync();
-
-        return new LoginResponse(accessToken, refreshToken, 60 * 15); // expires in seconds
+        var minutes15 = 15 * 60;
+        return new LoginResponse(accessToken, refreshToken, minutes15);
     }
 }

@@ -4,10 +4,12 @@ using Identity.Identity.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using SharedKernel.Web;
 using System.Text;
 
 public static class IdentityExtensions
@@ -66,10 +68,19 @@ public static class IdentityExtensions
 
     public static WebApplication UseIdentityModule(this WebApplication app)
     {
-        app.MapRegisterEndpoint();
-        app.MapLoginEndpoint();
-        app.MapRefreshEndpoint();
+        var endpointsBuilder = app.MapGroup("/api");
+        EndpointsProvider.RegisterAppEndpoints(endpointsBuilder);
 
         return app;
+    }
+}
+
+public static class EndpointsProvider
+{
+    public static void RegisterAppEndpoints(RouteGroupBuilder endpointsBuilder)
+    {
+        endpointsBuilder.MapEndpoint<LoginEndpoint>();
+        endpointsBuilder.MapEndpoint<RefreshEndpoint>();
+        endpointsBuilder.MapEndpoint<RegisterNewUserEndpoint>();
     }
 }

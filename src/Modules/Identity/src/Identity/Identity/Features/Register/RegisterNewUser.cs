@@ -2,22 +2,22 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Routing;
+using SharedKernel.Web;
 public record RegisterCommand(string UserName, string Email, string Password);
 public record RegisterResponse(string UserId, string UserName, string Email);
 
-public static class RegisterEndpoint
+public class RegisterNewUserEndpoint : IEndpoint
 {
-    public static WebApplication MapRegisterEndpoint(this WebApplication app)
+    public void MapEndpoint(IEndpointRouteBuilder builder)
     {
-        app.MapPost("/auth/register", async (RegisterCommand cmd, RegisterHandler handler) =>
+        builder.MapPost("/auth/register", async (RegisterCommand cmd, RegisterHandler handler) =>
         {
             var result = await handler.Handle(cmd);
             return Results.Ok(result);
         })
         .WithName("Register")
         .WithTags("Auth");
-
-        return app;
     }
 }
 

@@ -2,15 +2,17 @@
 using Identity.Identity.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
+using SharedKernel.Web;
 public record RefreshCommand(string RefreshToken);
 public record RefreshResponse(string AccessToken, string RefreshToken);
 
-public static class RefreshEndpoint
+public class RefreshEndpoint : IEndpoint
 {
-    public static WebApplication MapRefreshEndpoint(this WebApplication app)
+    public void MapEndpoint(IEndpointRouteBuilder builder)
     {
-        app.MapPost("/auth/refresh", async (RefreshCommand cmd, RefreshHandler handler, HttpContext http) =>
+        builder.MapPost("/auth/refresh", async (RefreshCommand cmd, RefreshHandler handler, HttpContext http) =>
         {
             var ip = http.Connection.RemoteIpAddress?.ToString() ?? "unknown";
             var result = await handler.Handle(cmd, ip);
@@ -18,8 +20,6 @@ public static class RefreshEndpoint
         })
         .WithName("Refresh")
         .WithTags("Auth");
-
-        return app;
     }
 }
 
@@ -43,7 +43,6 @@ public class RefreshHandler
         if (rt == null || rt.IsRevoked || rt.ExpiresAt <= DateTime.UtcNow)
             throw new ApplicationException("Invalid refresh token");
 
-        // revoke старого токена
         rt.IsRevoked = true;
         _db.RefreshTokens.Update(rt);
 
