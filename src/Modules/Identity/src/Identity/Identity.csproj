@@ -31,4 +31,9 @@
 		<ProjectReference Include="..\..\..\..\SharedKernel\SharedKernel.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Identity\Features\OAuthVkontakte\" />
+	  <Folder Include="Identity\Features\OAuthYandex\" />
+	</ItemGroup>
+
 </Project>

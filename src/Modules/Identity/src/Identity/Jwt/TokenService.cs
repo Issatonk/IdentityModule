@@ -1,5 +1,6 @@
 ﻿using Identity.Dto;
 using Identity.Identity.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -11,6 +12,7 @@ public interface ITokenService
 {
     string CreateAccessToken(User user, IList<Claim>? extraClaims = null);
     (string token, DateTime expires) GenerateRefreshToken();
+    void SaveRefreshTokenInCookie(string refreshToken, DateTime refreshExpires, HttpResponse response);
     string HashToken(string token);
 }
 
@@ -42,6 +44,20 @@ public class TokenService : ITokenService
         );
 
         return new JwtSecurityTokenHandler().WriteToken(token);
+    }
+
+    public void SaveRefreshTokenInCookie(string refreshToken, DateTime refreshExpires, HttpResponse response)
+    {
+        response.Cookies.Append(
+            "refreshToken",
+            refreshToken,
+            new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict,
+                Expires = refreshExpires
+            });
     }
 
     public (string token, DateTime expires) GenerateRefreshToken()

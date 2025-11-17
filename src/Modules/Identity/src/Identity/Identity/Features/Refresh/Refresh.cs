@@ -48,18 +48,18 @@ public class RefreshHandler
 
         var user = rt.User;
         var accessToken = _tokenService.CreateAccessToken(user);
-        var (newToken, newExp) = _tokenService.GenerateRefreshToken();
+        var (newRefreshToken, newRefreshExpires) = _tokenService.GenerateRefreshToken();
 
         _db.RefreshTokens.Add(new RefreshToken
         {
-            TokenHash = _tokenService.HashToken(newToken),
-            ExpiresAt = newExp,
+            TokenHash = _tokenService.HashToken(newRefreshToken),
+            ExpiresAt = newRefreshExpires,
             CreatedAt = DateTime.UtcNow,
             CreatedByIp = ipAddress,
             UserId = user.Id
         });
 
         await _db.SaveChangesAsync();
-        return new RefreshResponse(accessToken, newToken);
+        return new RefreshResponse(accessToken, newRefreshToken);
     }
 }

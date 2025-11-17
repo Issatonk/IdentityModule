@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using SharedKernel.Web;
 using System.Security.Claims;
 
-namespace Identity.Identity.Features.GoogleOAuth;
+namespace Identity.Identity.Features.OAuthGoogle;
 
 public class GoogleAuthEndpoint : IEndpoint, IProviderName
 {
