@@ -1,9 +1,6 @@
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddIdentityModule(
-    builder.Configuration.GetConnectionString("DefaultConnection"),
-    builder.Configuration
-);
+builder.Services.AddIdentityModule(builder.Configuration);
 
 builder.Services.AddControllers();
 var app = builder.Build();

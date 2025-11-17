@@ -46,7 +46,6 @@ public class LoginHandler
         var (refreshToken, refreshExpires) = _tokenService.GenerateRefreshToken();
         var hashed = _tokenService.HashToken(refreshToken);
 
-        // Сохраняем refresh token
         _db.RefreshTokens.Add(new RefreshToken
         {
             TokenHash = hashed,

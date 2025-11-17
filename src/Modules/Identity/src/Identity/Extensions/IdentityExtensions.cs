@@ -1,5 +1,6 @@
 ﻿using Identity.Data;
 using Identity.Dto;
+using Identity.Identity.Features.GoogleOAuth;
 using Identity.Identity.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -14,11 +15,11 @@ using System.Text;
 
 public static class IdentityExtensions
 {
-    public static IServiceCollection AddIdentityModule(this IServiceCollection services, string connectionString, IConfiguration configuration)
+    public static IServiceCollection AddIdentityModule(this IServiceCollection services, IConfiguration configuration)
     {
         // DbContext
         services.AddDbContext<IdentityContext>(options =>
-            options.UseNpgsql(connectionString));
+            options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
 
         // Identity
         services.AddIdentity<User, Role>(options =>
@@ -54,6 +55,11 @@ public static class IdentityExtensions
                 ValidateLifetime = true,
                 ClockSkew = TimeSpan.FromSeconds(30)
             };
+        })
+        .AddGoogle(options =>
+        {
+            options.ClientId = configuration["OAuth:Google:ClientId"];
+            options.ClientSecret = configuration["OAuth:Google:ClientSecret"]; ;
         });
 
         services.AddScoped<ITokenService, TokenService>();
@@ -61,6 +67,7 @@ public static class IdentityExtensions
         services.AddScoped<RegisterHandler>();
         services.AddScoped<LoginHandler>();
         services.AddScoped<RefreshHandler>();
+        services.AddScoped<GoogleOAuthHandler>();
 
 
         return services;
@@ -82,5 +89,6 @@ public static class EndpointsProvider
         endpointsBuilder.MapEndpoint<LoginEndpoint>();
         endpointsBuilder.MapEndpoint<RefreshEndpoint>();
         endpointsBuilder.MapEndpoint<RegisterNewUserEndpoint>();
+        endpointsBuilder.MapEndpoint<GoogleAuthEndpoint>();
     }
 }

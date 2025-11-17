@@ -20,6 +20,11 @@ public class IdentityContext : IdentityDbContext<User, Role, Guid, UserClaim, Us
             b.ToTable("Users");
             b.HasMany(e => e.RefreshTokens).WithOne(rt => rt.User)
              .HasForeignKey(rt => rt.UserId).IsRequired();
+
+            b.HasKey(u => u.Id);
+
+            b.Property(u => u.Id)
+                  .ValueGeneratedNever();
         });
 
         builder.Entity<Role>(b => b.ToTable("Roles"));
